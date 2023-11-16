@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #parent>div {
+            padding: 7px;
+        }
+    </style>
+</head>
+
+<body style="background-color: rgb(35, 34, 34); height: 100vh; border: 3px solid black;">
+    <div style="text-align: center; background-color: #847575; padding-bottom: 10px;">
+        <h1 style="text-decoration: underline; margin-bottom: 50px;">** To-do application **</h2>
+            <input type="text" id="input" placeholder="write something to add"
+                style="width: 300px; height: 37px; border-radius: 13px; border:2px solid rgb(29, 3, 29); font-weight: bold; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: larger;">
+            <button id="add" style="width:fit-content; height: 40px;">Add</button>
+            <div style="display: flex; justify-content: center;margin-top: 20px;">
+                <div id="parent"
+                    style="height: fit-content; width:350px ; text-align: left; font-size:large; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: rgb(12, 12, 12); font-weight: bold;border: 4px solid rgb(250, 247, 247); border-radius: 20px; padding: 20px; ">
+                </div>
+            </div>
+    </div>
+</body>
+<script>
+    //  SELECTING THE NECCESSARY ELEMENTS
+
+    let parent = document.getElementById("parent");
+    let input = document.getElementById("input");
+    let add = document.getElementById("add");
+
+    //  ADDING EVENTLISTNER ON MAIN ADD BUTTON
+
+    add.addEventListener("click", addEle);
+    let arr = [];
+
+    //** THE FINAL RENDERING FUNCTION ***
+
+    function render(arr) {
+        // IN EVERY RENDER THE VALUE OF ARRAY WILL BE START FROM 0
+        parent.innerText = ""
+        // DIGITS OR NUMBERRING AS PER ADDITION OF ELEMENTS
+        let idx = 1;
+
+        // for each loop for rendenring each elements in the array list
+
+        for (let ele of arr) {
+            let newEle = document.createElement("span");
+            let newButton = document.createElement("button");
+            let delButton = document.createElement("button");
+            let editEle = document.createElement("button");
+
+            //  adding the input value to new element
+
+            newEle.innerText = idx++ + ". " + ele.title;
+            let div = document.createElement("div");
+            div.append(newEle, newButton, delButton, editEle);
+            div.style.display = "flex";
+            div.style.justifyContent = "space-between";
+            parent.append(div);
+
+            // EDIT BUTTON SPECIFIACTIONS
+            editEle.innerText = "edit";
+            editEle.addEventListener("click", () => {
+                editEle.style.display = "none"
+                let edited_input = document.createElement("input");
+                edited_input.style.height = "fit-content"
+                edited_input.style.width = "85px"
+                div.append(newEle, newButton, delButton, editEle, edited_input);   // APPENDING THE CHILD ELEMENTS INTP THE PARENT ELEMENT
+                edited_input.addEventListener("blur", () => {
+                    ele.status = edited_input.value;
+                    newEle.innerText = idx + ". " + edited_input.value;
+                    edited_input.style.display = "none";
+                    editEle.style.display = "block"
+                })
+            })
+
+            // DELETE BUTTON SPECIFICATIONS
+
+            delButton.innerText = "DELETE"
+            delButton.addEventListener("click", () => {
+                deleEle(ele.id);
+            })
+
+            // STATUS BUTTON SPECIFICATIONS
+
+            newButton.innerText = ele.status;
+
+            newButton.addEventListener("click", () => {
+                if (ele.status == "pending") {
+                    ele.status = "completed"
+
+                    newButton.style.backgroundColor = "green"
+                } else {
+                    ele.status = "pending";
+
+                    newButton.style.backgroundColor = "red"
+                }
+                newButton.innerText = ele.status;
+
+            })
+        }
+    }
+    let id = 0;
+
+    // function for adding new elements
+
+    function addEle() {
+        let obj = { title: input.value, status: "pending", id: id++ };
+        arr.unshift(obj);
+        render(arr);
+        input.value = "";
+        localStorage.setItem("to-do-app", JSON.stringify(arr))
+    }
+
+    // function for deleting
+
+    function deleEle(id) {
+        let newArr = arr.filter((ele) => {
+            return ele.id != id;
+        })
+        arr = newArr;
+        localStorage.setItem("to-do-app", JSON.stringify(arr))
+        render(newArr);
+
+
+    }
+
+
+
+
+</script>
+
+</html>
